@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "124754075895",
+    "firebase_url": "https://cryptchat-fe443.firebaseio.com",
+    "project_id": "cryptchat-fe443",
+    "storage_bucket": "cryptchat-fe443.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124754075895:android:8e45e1720263877d",
+        "android_client_info": {
+          "package_name": "com.example.amirbaum.cryptchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "124754075895-af97t9r6pv08gp0o6gchlqc7asbh7aea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBUCluAGW0BAV2dH00MOItWyhHekOczLI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

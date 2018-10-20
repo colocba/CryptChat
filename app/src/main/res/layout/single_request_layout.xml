@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:src="@mipmap/ic_launcher"
+        android:id="@+id/single_request_image" />
+
+    <Button
+        android:id="@+id/single_request_accept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/single_request_image"
+        android:layout_marginStart="26dp"
+        android:layout_toEndOf="@+id/single_request_image"
+        android:text="ACCEPT" />
+
+    <Button
+        android:id="@+id/single_request_decline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/single_request_accept"
+        android:layout_alignBottom="@+id/single_request_accept"
+        android:layout_marginStart="22dp"
+        android:layout_toEndOf="@+id/single_request_accept"
+        android:text="DECLINE" />
+
+    <TextView
+        android:id="@+id/single_request_name_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/single_request_accept"
+        android:layout_alignStart="@+id/single_request_accept"
+        android:text="Somebody want's to be your friend!" />
+
+</RelativeLayout>

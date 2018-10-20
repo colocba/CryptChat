@@ -1,0 +1,46 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.amirbaum.cryptchat.ChatsFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/conv_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/no_chats_layout"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/crypt_chat_logo"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="88dp"
+            android:src="@drawable/only_chat_bubble" />
+
+
+        <TextView
+            android:id="@+id/no_chats_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/crypt_chat_logo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="22dp"
+            android:padding="10dp"
+            android:text="You have no chats yet"
+            android:textStyle="bold"
+            android:textSize="20dp"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

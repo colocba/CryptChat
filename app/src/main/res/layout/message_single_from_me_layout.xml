@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/message_single_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <!--<de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/message_profile_image_layout"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_weight="0"
+        android:src="@mipmap/ic_launcher" /> -->
+
+    <TextView
+        android:id="@+id/message_text_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/time_text_layout"
+        android:background="@drawable/message_text_background"
+        android:padding="20dp"
+        android:text="Message Text"
+        android:textColor="#444444"
+        android:textSize="14sp" />
+
+
+    <TextView
+        android:id="@+id/time_text_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="00:00"
+        android:textColor="@android:color/holo_blue_bright"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/message_image_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/message_text_layout"
+        android:adjustViewBounds="true"
+        android:background="@drawable/message_text_background"
+        android:cropToPadding="true"
+        android:padding="10dp"
+        android:scaleType="fitXY" />
+
+    <!-- <LinearLayout
+        android:id="@+id/message_image_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/time_text_layout"
+        android:layout_toLeftOf="@+id/message_profile_image_layout"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/message_text_background"
+        android:padding="20dp"
+        android:text="Message Text"
+        android:textColor="#444444"
+        android:textSize="14sp"
+        android:orientation="horizontal"
+        >
+
+        <ImageButton
+            android:id="@+id/new_image_received_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_photo_camera"
+            android:background="@drawable/message_text_background"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Image"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
+
+    </LinearLayout> -->
+
+
+</RelativeLayout>

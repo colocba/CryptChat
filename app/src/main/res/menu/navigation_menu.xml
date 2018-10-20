@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_men_user">
+    <item android:id="@+id/item_account"
+        android:title="My account"/>
+    <item android:id="@+id/item_all_users"
+        android:title="All users"/>
+    <item android:id="@+id/item_logout"
+        android:title="Log Out"/>
+    <item android:id="@+id/menu_item_search"
+        android:title="Search..."
+        android:icon="@drawable/ic_search_black_24dp"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.widget.SearchView" />
+</menu>

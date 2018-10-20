@@ -1,0 +1,55 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.amirbaum.cryptchat.RequestFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/request_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/no_requests_layout">
+
+        <!-- <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/sad_face_image_request"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="88dp"
+            android:src="@drawable/sad_icon" /> -->
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/sad_face_image_request"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/uh_oh" />
+
+        <TextView
+            android:id="@+id/no_requests_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/sad_face_image_request"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="22dp"
+            android:padding="10dp"
+            android:text="You don't have any request yet"
+            android:textStyle="bold"
+            android:textSize="20dp"/>
+
+    </RelativeLayout>
+
+</FrameLayout>
