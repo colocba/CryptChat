@@ -144,14 +144,12 @@ public class ChatActivity extends AppCompatActivity {
         mAdapter = new MessageAdapter(messagesList, mPrivateKey, mAESKey, mCurrentUserId, getApplicationContext());
 
         mMessagesList = (RecyclerView) findViewById(R.id.messages_list);
-        //mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe_layout);
         mLinearLayout = new LinearLayoutManager(this);
 
         mMessagesList.setHasFixedSize(true);
         mMessagesList.setLayoutManager(mLinearLayout);
         mMessagesList.setAdapter(mAdapter);
 
-        //mAdapter.clear();
         loadMessages();
 
 
@@ -242,21 +240,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
-        /*mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                mCurrentPage++;
-
-                itemPos = 0;
-
-                //loadMoreMessages();
-
-                mRefreshLayout.setRefreshing(false);
-
-            }
-        }); */
 
         mCustomBarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -399,7 +382,7 @@ public class ChatActivity extends AppCompatActivity {
     private void loadMessages() {
 
         DatabaseReference messageRef = mRootRef.child("Messages").child(mCurrentUserId).child(mChatUserId);
-        Query messagesQuery = messageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
+        Query messagesQuery = messageRef.limitToLast(TOTAL_ITEMS_TO_LOAD);
 
 
         messagesQuery.addChildEventListener(new ChildEventListener() {
@@ -407,24 +390,10 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 Messages message = dataSnapshot.getValue(Messages.class);
-
-                itemPos++;
-
-                if (itemPos == 1) {
-
-                    String messageKey = dataSnapshot.getKey();
-
-                    mLastKey = messageKey;
-                    mPrevKey = messageKey;
-
-                }
-
                 messagesList.add(message);
                 mAdapter.notifyDataSetChanged();
 
                 mMessagesList.scrollToPosition(messagesList.size() - 1);
-
-                //mRefreshLayout.setRefreshing(false);
 
             }
 

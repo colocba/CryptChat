@@ -259,8 +259,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
     public class SenderMessageViewHolder extends RecyclerView.ViewHolder {
 
         public TextView messageText;
-        //public CircleImageView profileImage;
-        //public TextView displayName;
         public ImageView messageImage;
         public ImageButton newImageButton;
         public TextView timeOfTheLastMessage;
@@ -290,9 +288,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    //String image = dataSnapshot.child("picture").getValue().toString();
-
-                    //Picasso.get().load(image).placeholder(R.mipmap.ic_launcher).into(profileImage);
                     timeOfTheLastMessage.setText(convertStampToTime(c.getTime()));
 
                 }
