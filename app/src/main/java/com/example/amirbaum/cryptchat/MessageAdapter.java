@@ -300,10 +300,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
             // THE MESSAGE IS A TEXT MESSAGE
             if (message_type.equals("text")) {
-
-                messageImage.setVisibility(View.INVISIBLE);
-                messageImage.setMaxHeight(0);
-                messageImage.setMaxWidth(0);
+                messageText.setVisibility(View.VISIBLE);
+                messageImage.setVisibility(View.GONE);
 
                 String decryptedMessage = "";
 
@@ -313,11 +311,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 // THE MESSAGE IS AN IMAGE MESSAGE
             } else {
                 // rsa_encrypted_message contains the encoded encrypted aes key for the other user to open
-
-                messageText.setVisibility(View.INVISIBLE);
-                messageText.setWidth(0);
-                messageText.setHeight(0);
-                //messageImage.setVisibility(View.VISIBLE);
+                messageImage.setVisibility(View.VISIBLE);
+                messageText.setVisibility(View.GONE);
 
                 String messageId = c.getId();
                 StorageReference filePath = mStorageRef.child("message_images").child(messageId + ".jpg");
