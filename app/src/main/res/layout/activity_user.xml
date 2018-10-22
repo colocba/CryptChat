@@ -8,9 +8,10 @@
     tools:context="com.example.amirbaum.cryptchat.UserActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/appBarLayout">
+        android:background="@color/fui_bgPhone">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/main_tabs"

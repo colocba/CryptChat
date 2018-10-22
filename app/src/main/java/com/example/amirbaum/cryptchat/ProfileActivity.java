@@ -73,8 +73,6 @@ public class ProfileActivity extends AppCompatActivity {
         userImageView = (ImageView) findViewById(R.id.profile_image_view);
         userNameTextView = (TextView) findViewById(R.id.profile_name_text);
         userStatusTextView = (TextView) findViewById(R.id.profile_status_text);
-        amountOfFriendsTextView = (TextView) findViewById(R.id.profile_friends_amount_text);
-        mutualFriendsTextView = (TextView) findViewById(R.id.profile_friends_comun_text);
         requestFriendshipButton = (Button) findViewById(R.id.send_request_button);
         declineFriendshipButton = (Button) findViewById(R.id.decline_friendship_button);
 
