@@ -19,10 +19,13 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -33,6 +36,7 @@ public class AllUsersActivity extends AppCompatActivity {
     private RecyclerView mUsersList;
     private DatabaseReference mUsersDatabase;
     private String mUid;
+    private String myName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +47,21 @@ public class AllUsersActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUid = mAuth.getCurrentUser().getUid();
 
-        mUsersList = (RecyclerView)findViewById(R.id.users_list);
+        mUsersList = (RecyclerView) findViewById(R.id.users_list);
         mUsersList.setHasFixedSize(true);
         mUsersList.setLayoutManager(new LinearLayoutManager(this));
+
+        mUsersDatabase.child(mUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                myName = dataSnapshot.child("name").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -65,7 +81,7 @@ public class AllUsersActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //TODO: MAKE SEARCH WITHIN THE CURRENT ACTIVITY
+                startRecyclerView(newText);
                 return true;
             }
         });
@@ -94,7 +110,12 @@ public class AllUsersActivity extends AppCompatActivity {
 
         mUsersDatabase.child(mAuth.getCurrentUser().getUid()).child("online").setValue(true);
 
+        startRecyclerView("");
+
         super.onStart();
+    }
+
+    public void startRecyclerView (final String filter) {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
@@ -112,6 +133,10 @@ public class AllUsersActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull Users model) {
 
+                if (!model.getName().contains(filter) && !filter.equals("")) {
+                    holder.hide();
+                }
+
                 final String user_id = getRef(position).getKey();
 
                 if (user_id.equals(mUid)) {
@@ -127,6 +152,7 @@ public class AllUsersActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent selected_user_intent = new Intent(AllUsersActivity.this, ProfileActivity.class);
                         selected_user_intent.putExtra("user_id", user_id);
+                        selected_user_intent.putExtra("name", myName);
                         startActivity(selected_user_intent);
                     }
                 });
@@ -140,10 +166,12 @@ public class AllUsersActivity extends AppCompatActivity {
                 return new UsersViewHolder(view);
             }
 
+
         };
 
         firebaseRecyclerAdapter.startListening();
         mUsersList.setAdapter(firebaseRecyclerAdapter);
+
     }
 
     @Override
@@ -168,27 +196,28 @@ public class AllUsersActivity extends AppCompatActivity {
 
         public void setName(String name) {
             TextView singleUserImageTV;
-            singleUserImageTV = (TextView)mView.findViewById(R.id.single_user_name);
+            singleUserImageTV = (TextView) mView.findViewById(R.id.single_user_name);
             singleUserImageTV.setText(name);
         }
 
         public void setStatus(String status) {
             TextView singleUserStatusTV;
-            singleUserStatusTV = (TextView)mView.findViewById(R.id.single_user_status);
+            singleUserStatusTV = (TextView) mView.findViewById(R.id.single_user_status);
             singleUserStatusTV.setText(status);
         }
 
         public void setProfilePicture(String picture) {
-            CircleImageView singleUserCIV = (CircleImageView)mView.findViewById(R.id.single_request_image);
-            if (!picture.equals("default"))
-            {
-                Picasso.get().load(picture).placeholder(R.mipmap.ic_launcher).into(singleUserCIV);
+            CircleImageView singleUserCIV = (CircleImageView) mView.findViewById(R.id.single_request_image);
+            if (!picture.equals("default")) {
+                Picasso.get().load(picture).placeholder(R.drawable.user_place_holder).into(singleUserCIV);
             }
         }
 
         public void hide() {
-            mView.setVisibility(View.INVISIBLE);
-            mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            //mView.setVisibility(View.INVISIBLE);
+            //mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            //mView.setVisibility(View.GONE);
+            mView.setLayoutParams(new RecyclerView.LayoutParams(0,0));
         }
     }
 }

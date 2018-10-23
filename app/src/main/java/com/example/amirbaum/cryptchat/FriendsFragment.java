@@ -85,6 +85,36 @@ public class FriendsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        startRecyclerView("");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        menu.clear();
+        inflater.inflate(R.menu.navigation_menu, menu);
+
+
+        MenuItem ourSearchItem = menu.findItem(R.id.menu_item_search);
+        SearchView sv = (SearchView) ourSearchItem.getActionView();
+
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                startRecyclerView(newText);
+                return true;
+            }
+        });
+    }
+
+    private void startRecyclerView(final String filter) {
+
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("Friends").child(mCurrent_user_id)
@@ -105,7 +135,15 @@ public class FriendsFragment extends Fragment {
                 mUserDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        holder.setName(dataSnapshot.child("name").getValue().toString());
+
+                        String friendsName = dataSnapshot.child("name").getValue().toString();
+
+                        if (!friendsName.contains(filter) && !filter.equals("")) {
+                            holder.hide();
+                            return;
+                        }
+
+                        holder.setName(friendsName);
                         holder.setStatus(dataSnapshot.child("status").getValue().toString());
                         holder.setProfilePicture(dataSnapshot.child("picture").getValue().toString());
                         holder.setOnlineStatus(dataSnapshot.child("online").getValue().toString());
@@ -171,31 +209,7 @@ public class FriendsFragment extends Fragment {
         firebaseRecyclerAdapter.startListening();
         mFriendsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mFriendsList.setAdapter(firebaseRecyclerAdapter);
-    }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        menu.clear();
-        inflater.inflate(R.menu.navigation_menu, menu);
-
-
-        MenuItem ourSearchItem = menu.findItem(R.id.menu_item_search);
-        SearchView sv = (SearchView) ourSearchItem.getActionView();
-
-        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //TODO: MAKE SEARCH WITHIN THE CURRENT FRAGMENT
-                return true;
-            }
-        });
     }
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {
@@ -222,7 +236,7 @@ public class FriendsFragment extends Fragment {
         public void setProfilePicture(String picture) {
             CircleImageView singleUserCIV = (CircleImageView) mView.findViewById(R.id.single_request_image);
             if (!picture.equals("default")) {
-                Picasso.get().load(picture).placeholder(R.mipmap.ic_launcher).into(singleUserCIV);
+                Picasso.get().load(picture).placeholder(R.drawable.user_place_holder).into(singleUserCIV);
             }
         }
 
@@ -234,6 +248,11 @@ public class FriendsFragment extends Fragment {
             } else {
                 onlineStatusImage.setVisibility(View.INVISIBLE);
             }
+        }
+
+        public void hide() {
+            mView.setVisibility(View.INVISIBLE);
+            mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
         }
 
     }

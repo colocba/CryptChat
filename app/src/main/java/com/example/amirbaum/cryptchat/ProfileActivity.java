@@ -40,8 +40,6 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView userImageView;
     private TextView userNameTextView;
     private TextView userStatusTextView;
-    private TextView amountOfFriendsTextView;
-    private TextView mutualFriendsTextView;
     private Button requestFriendshipButton, declineFriendshipButton;
     private ProgressDialog progressDialog;
 
@@ -65,11 +63,12 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Getting the users id we are looking now
         final String user_id = getIntent().getStringExtra("user_id");
+        final String myName = getIntent().getStringExtra("name");
         // Getting our user instance
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-        //------------------ Starting all widgents ---------------------- //
+        //------------------ Starting all widgets ---------------------- //
         userImageView = (ImageView) findViewById(R.id.profile_image_view);
         userNameTextView = (TextView) findViewById(R.id.profile_name_text);
         userStatusTextView = (TextView) findViewById(R.id.profile_status_text);
@@ -104,7 +103,10 @@ public class ProfileActivity extends AppCompatActivity {
 
                 userNameTextView.setText(mUserName);
                 userStatusTextView.setText(status);
-                Picasso.get().load(picture).placeholder(R.mipmap.ic_launcher).into(userImageView);
+
+                if (!picture.equals("default")) {
+                    Picasso.get().load(picture).placeholder(R.drawable.user_place_holder).into(userImageView);
+                }
 
                 // Listening on the Friends_Req -> ME field of the firebase db
                 mDatabaseFriendRequest.child(mCurrentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -200,7 +202,9 @@ public class ProfileActivity extends AppCompatActivity {
 
                     Map requestMap = new HashMap();
                     requestMap.put("Friends_Req/" + mCurrentUser.getUid() + "/" + user_id + "/request_type", "sent");
+                    //requestMap.put("Friends_Req/" + mCurrentUser.getUid() + "/" + user_id + "/from", mUserName);
                     requestMap.put("Friends_Req/" + user_id + "/" + mCurrentUser.getUid() + "/request_type", "received");
+                    //requestMap.put("Friends_Req/" + user_id + "/" + mCurrentUser.getUid() + "/from", myName);
                     requestMap.put("Notifications/" + user_id + "/" + newNotificationId, dataMap);
 
                     mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
@@ -238,7 +242,11 @@ public class ProfileActivity extends AppCompatActivity {
 
                     // Entering the date of the recent friendship in respective friends fields
                     friendsMap.put("Friends/" + mCurrentUser.getUid() + "/" + user_id + "/date", currentDate);
+                    // FOR FILTERING PURPOSES
+                    //friendsMap.put("Friends/" + mCurrentUser.getUid() + "/" + user_id + "/name", mUserName);
                     friendsMap.put("Friends/" + user_id + "/" + mCurrentUser.getUid() + "/date", currentDate);
+                    // FOR FILTERING PURPOSES
+                    //friendsMap.put("Friends/" + user_id + "/" + mCurrentUser.getUid() + "/name", myName);
 
                     // Deleting friend request between both of the users
                     friendsMap.put("Friends_Req/" + mCurrentUser.getUid() + "/" + user_id, null);

@@ -103,7 +103,7 @@ public class SettingsActivity extends AppCompatActivity {
                 {
                     //Picasso.get().load(thumb).placeholder(R.mipmap.ic_launcher).into(ciSettingsImage);
                     Picasso.get().load(picture).networkPolicy(NetworkPolicy.OFFLINE)
-                            .placeholder(R.mipmap.ic_launcher).into(ciSettingsImage, new Callback() {
+                            .placeholder(R.drawable.user_place_holder).into(ciSettingsImage, new Callback() {
                         @Override
                         public void onSuccess() {
 
@@ -111,7 +111,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                         @Override
                         public void onError(Exception e) {
-                            Picasso.get().load(picture).placeholder(R.mipmap.baseline_person_black_24).into(ciSettingsImage);
+                            Picasso.get().load(picture).placeholder(R.drawable.user_place_holder).into(ciSettingsImage);
                         }
                     });
                 }

@@ -164,7 +164,7 @@ public class ChatActivity extends AppCompatActivity {
                 mPublicKey = dataSnapshot.child("public_key").getValue().toString();
                 mCustomBarTitle.setText(mChatUserName);
                 if (!mPicture.equals("default")) {
-                    Picasso.get().load(mPicture).placeholder(R.mipmap.ic_launcher).into(mCustomBarImageView);
+                    Picasso.get().load(mPicture).placeholder(R.drawable.user_place_holder).into(mCustomBarImageView);
                 }
 
                 if (mOnline.equals("true")) {

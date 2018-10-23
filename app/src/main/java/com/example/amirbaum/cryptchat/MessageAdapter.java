@@ -174,7 +174,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     displayName.setText(name);
 
                     Picasso.get().load(image)
-                            .placeholder(R.mipmap.ic_launcher).into(profileImage);
+                            .placeholder(R.drawable.user_place_holder).into(profileImage);
                     timeOfTheLastMessage.setText(convertStampToTime(c.getTime()));
 
                 }

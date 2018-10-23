@@ -11,7 +11,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="10dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/user_place_holder" />
 
     <TextView
         android:id="@+id/custom_bar_title"

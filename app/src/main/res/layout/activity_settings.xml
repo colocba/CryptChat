@@ -13,7 +13,7 @@
         android:layout_height="170dp"
         android:layout_gravity="center"
         android:layout_marginTop="40dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/user_place_holder" />
 
     <TextView
         android:id="@+id/tbDisplayName"

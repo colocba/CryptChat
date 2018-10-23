@@ -180,6 +180,7 @@ public class RequestFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 //TODO: MAKE SEARCH WITHIN THE CURRENT FRAGMENT
+
                 return true;
             }
         });
@@ -207,7 +208,7 @@ public class RequestFragment extends Fragment {
         public void setImage(String picture) {
             CircleImageView senderImage = (CircleImageView)mView.findViewById(R.id.single_request_image);
             if (!picture.equals("default")) {
-                Picasso.get().load(picture).placeholder(R.mipmap.ic_launcher).into(senderImage);
+                Picasso.get().load(picture).placeholder(R.drawable.user_place_holder).into(senderImage);
             }
         }
 
