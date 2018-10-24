@@ -106,6 +106,123 @@ public class ChatsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        startRecyclerView("");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        menu.clear();
+        inflater.inflate(R.menu.navigation_menu, menu);
+
+
+        MenuItem ourSearchItem = menu.findItem(R.id.menu_item_search);
+        SearchView sv = (SearchView) ourSearchItem.getActionView();
+
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                startRecyclerView(newText);
+                return true;
+            }
+        });
+
+    }
+
+    private class ConvViewHolder extends RecyclerView.ViewHolder {
+
+        View mView;
+        String mPrivateKey;
+        String mEncryptionType;
+        String mType;
+
+        public ConvViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public void setEncryption(String encryptionType) {
+            mEncryptionType = encryptionType;
+        }
+
+        public void setPrivateKey(String privateKey) {
+            mPrivateKey = privateKey;
+        }
+
+        public void setMessage(String message, boolean isSeen) {
+
+            TextView userStatusView = (TextView) mView.findViewById(R.id.single_user_status);
+
+            if (mEncryptionType.equals("RSA")) {
+                if (mType.equals("text")) {
+                    userStatusView.setText(EncryptionDecryptionUtility.RSAdecryptMessage(message, mPrivateKey));
+                } else
+                    userStatusView.setText("Image");
+            } else {
+                if (mType.equals("text")) {
+                    userStatusView.setText(EncryptionDecryptionUtility.AESdecryptMessage(message, mPrivateKey));
+                } else
+                    userStatusView.setText("Image");
+            }
+
+            if (!isSeen) {
+                userStatusView.setTypeface(userStatusView.getTypeface(), Typeface.BOLD);
+            } else {
+                userStatusView.setTypeface(userStatusView.getTypeface(), Typeface.NORMAL);
+            }
+
+        }
+
+        public void setName(String name) {
+
+            TextView userNameView = (TextView) mView.findViewById(R.id.single_user_name);
+            userNameView.setText(name);
+
+        }
+
+        public void setUserImage(String thumb_image, Context ctx) {
+
+            CircleImageView userImageView = (CircleImageView) mView.findViewById(R.id.single_request_image);
+            Picasso.get().load(thumb_image).placeholder(R.drawable.user_place_holder).into(userImageView);
+
+        }
+
+        public void setUserOnline(String online_status) {
+
+            ImageView userOnlineView = (ImageView) mView.findViewById(R.id.user_single_online_icon);
+
+            if (online_status.equals("true")) {
+
+                userOnlineView.setVisibility(View.VISIBLE);
+
+            } else {
+
+                userOnlineView.setVisibility(View.INVISIBLE);
+
+            }
+
+        }
+
+        public void hide() {
+            mView.setVisibility(View.GONE);
+            //mView.setVisibility(View.INVISIBLE);
+            //mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+        }
+
+        public void setType(String type) {
+            this.mType = type;
+        }
+    }
+
+    public void startRecyclerView(final String filter) {
+
         Query query = mConvDatabase
                 .orderByChild("timestamp")
                 .limitToLast(50);
@@ -173,6 +290,12 @@ public class ChatsFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         final String userName = dataSnapshot.child("name").getValue().toString();
+
+                        if (!userName.contains(filter) && !filter.equals("")) {
+                            holder.hide();
+                            return;
+                        }
+
                         String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
 
                         if (dataSnapshot.hasChild("online")) {
@@ -235,114 +358,6 @@ public class ChatsFragment extends Fragment {
         mFirebaseRecyclerAdapter.startListening();
         mConvList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mConvList.setAdapter(mFirebaseRecyclerAdapter);
-    }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        menu.clear();
-        inflater.inflate(R.menu.navigation_menu, menu);
-
-
-        MenuItem ourSearchItem = menu.findItem(R.id.menu_item_search);
-        SearchView sv = (SearchView) ourSearchItem.getActionView();
-
-        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return true;
-            }
-        });
-
-    }
-
-    private class ConvViewHolder extends RecyclerView.ViewHolder {
-
-        View mView;
-        String mPrivateKey;
-        String mEncryptionType;
-        String mType;
-
-        public ConvViewHolder(View itemView) {
-            super(itemView);
-            mView = itemView;
-        }
-
-        public void setEncryption(String encryptionType) {
-            mEncryptionType = encryptionType;
-        }
-
-        public void setPrivateKey(String privateKey) {
-            mPrivateKey = privateKey;
-        }
-
-        public void setMessage(String message, boolean isSeen) {
-
-            TextView userStatusView = (TextView) mView.findViewById(R.id.single_user_status);
-
-            if (mEncryptionType.equals("RSA")) {
-                if (mType.equals("text")) {
-                    userStatusView.setText(EncryptionDecryptionUtility.RSAdecryptMessage(message, mPrivateKey));
-                } else
-                    userStatusView.setText("Image");
-            } else {
-                if (mType.equals("text")) {
-                    userStatusView.setText(EncryptionDecryptionUtility.AESdecryptMessage(message, mPrivateKey));
-                } else
-                    userStatusView.setText("Image");
-            }
-
-            if (!isSeen) {
-                userStatusView.setTypeface(userStatusView.getTypeface(), Typeface.BOLD);
-            } else {
-                userStatusView.setTypeface(userStatusView.getTypeface(), Typeface.NORMAL);
-            }
-
-        }
-
-        public void setName(String name) {
-
-            TextView userNameView = (TextView) mView.findViewById(R.id.single_user_name);
-            userNameView.setText(name);
-
-        }
-
-        public void setUserImage(String thumb_image, Context ctx) {
-
-            CircleImageView userImageView = (CircleImageView) mView.findViewById(R.id.single_request_image);
-            Picasso.get().load(thumb_image).placeholder(R.mipmap.ic_launcher).into(userImageView);
-
-        }
-
-        public void setUserOnline(String online_status) {
-
-            ImageView userOnlineView = (ImageView) mView.findViewById(R.id.user_single_online_icon);
-
-            if (online_status.equals("true")) {
-
-                userOnlineView.setVisibility(View.VISIBLE);
-
-            } else {
-
-                userOnlineView.setVisibility(View.INVISIBLE);
-
-            }
-
-        }
-
-        public void hide() {
-            mView.setVisibility(View.INVISIBLE);
-            mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
-        }
-
-        public void setType(String type) {
-            this.mType = type;
-        }
     }
 }

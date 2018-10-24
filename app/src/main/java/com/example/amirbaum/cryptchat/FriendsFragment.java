@@ -251,8 +251,9 @@ public class FriendsFragment extends Fragment {
         }
 
         public void hide() {
-            mView.setVisibility(View.INVISIBLE);
-            mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            //mView.setVisibility(View.INVISIBLE);
+            //mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            mView.setVisibility(View.GONE);
         }
 
     }
