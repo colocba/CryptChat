@@ -133,7 +133,7 @@ public class AllUsersActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull Users model) {
 
-                if (!model.getName().contains(filter) && !filter.equals("")) {
+                if (!model.getName().toLowerCase().contains(filter.toLowerCase()) && !filter.equals("")) {
                     holder.hide();
                 }
 

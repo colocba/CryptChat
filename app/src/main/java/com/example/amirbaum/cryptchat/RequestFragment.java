@@ -53,6 +53,7 @@ public class RequestFragment extends Fragment {
     private DatabaseReference mRootRef;
 
     private String mCurrent_user_id;
+    private String mCurrentUserName;
 
     private View mMainView;
 
@@ -81,6 +82,18 @@ public class RequestFragment extends Fragment {
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         mRootRef = FirebaseDatabase.getInstance().getReference();
 
+        mRootRef.child("Users").child(mCurrent_user_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mCurrentUserName = dataSnapshot.child("name").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         mUserDatabase.keepSynced(true);
 
         setHasOptionsMenu(true);
@@ -93,6 +106,12 @@ public class RequestFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        startRecyclerView("");
+
+    }
+
+    private void startRecyclerView(String filter) {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
@@ -155,7 +174,7 @@ public class RequestFragment extends Fragment {
         };
 
         firebaseRecyclerAdapter.startListening();
-        mRequestFriendshipList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        //mRequestFriendshipList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mRequestFriendshipList.setAdapter(firebaseRecyclerAdapter);
 
     }
@@ -179,8 +198,10 @@ public class RequestFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //TODO: MAKE SEARCH WITHIN THE CURRENT FRAGMENT
-
+                //startRecyclerView(newText);
+                if (!newText.equals("")) {
+                    Toasty.info(getContext(), "There is nothing to search here...", Toast.LENGTH_SHORT, true).show();
+                }
                 return true;
             }
         });
@@ -213,7 +234,7 @@ public class RequestFragment extends Fragment {
         }
 
         public void hide() {
-            mView.setVisibility(View.INVISIBLE);
+            mView.setVisibility(View.GONE);
             mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
         }
 
@@ -232,7 +253,9 @@ public class RequestFragment extends Fragment {
 
                     // Entering the date of the recent friendship in respective friends fields
                     friendsMap.put("Friends/" + mCurrent_user_id + "/" + mUserID + "/date", currentDate);
+                    friendsMap.put("Friends/" + mCurrent_user_id + "/" + mUserID + "/friends_name", mUserName);
                     friendsMap.put("Friends/" + mUserID + "/" + mCurrent_user_id + "/date", currentDate);
+                    friendsMap.put("Friends/" + mUserID + "/" + mCurrent_user_id + "/friends_name", mCurrentUserName);
 
                     // Deleting friend request between both of the users
                     friendsMap.put("Friends_Req/" + mCurrent_user_id + "/" + mUserID, null);

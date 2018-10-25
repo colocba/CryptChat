@@ -63,6 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Getting the users id we are looking now
         final String user_id = getIntent().getStringExtra("user_id");
+        // Getting my name for filter purposes
         final String myName = getIntent().getStringExtra("name");
         // Getting our user instance
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -243,10 +244,10 @@ public class ProfileActivity extends AppCompatActivity {
                     // Entering the date of the recent friendship in respective friends fields
                     friendsMap.put("Friends/" + mCurrentUser.getUid() + "/" + user_id + "/date", currentDate);
                     // FOR FILTERING PURPOSES
-                    //friendsMap.put("Friends/" + mCurrentUser.getUid() + "/" + user_id + "/name", mUserName);
+                    friendsMap.put("Friends/" + mCurrentUser.getUid() + "/" + user_id + "/friends_name", mUserName);
                     friendsMap.put("Friends/" + user_id + "/" + mCurrentUser.getUid() + "/date", currentDate);
                     // FOR FILTERING PURPOSES
-                    //friendsMap.put("Friends/" + user_id + "/" + mCurrentUser.getUid() + "/name", myName);
+                    friendsMap.put("Friends/" + user_id + "/" + mCurrentUser.getUid() + "/friends_name", myName);
 
                     // Deleting friend request between both of the users
                     friendsMap.put("Friends_Req/" + mCurrentUser.getUid() + "/" + user_id, null);

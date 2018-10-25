@@ -7,10 +7,12 @@ package com.example.amirbaum.cryptchat;
 public class Conv {
     public boolean seen;
     public long timestamp;
+    public String other_user_name;
 
-    public Conv(boolean seen, long timestamp) {
+    public Conv(boolean seen, long timestamp, String other_user_name) {
         this.seen = seen;
         this.timestamp = timestamp;
+        this.other_user_name = other_user_name;
     }
 
     public Conv() {}
@@ -29,5 +31,13 @@ public class Conv {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getOther_user_name() {
+        return other_user_name;
+    }
+
+    public void setOther_user_name(String other_user_name) {
+        this.other_user_name = other_user_name;
     }
 }

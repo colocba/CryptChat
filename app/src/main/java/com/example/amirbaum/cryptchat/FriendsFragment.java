@@ -48,6 +48,7 @@ public class FriendsFragment extends Fragment {
     private DatabaseReference mUserDatabase;
 
     private String mCurrent_user_id;
+    private String mMyName;
 
     private View mMainView;
 
@@ -75,6 +76,19 @@ public class FriendsFragment extends Fragment {
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         mUserDatabase.keepSynced(true);
+
+        // GETTING MY NAME FOR SEARCH FILTER PURPOSES
+        mUserDatabase.child(mCurrent_user_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mMyName = dataSnapshot.child("name").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         setHasOptionsMenu(true);
 
@@ -129,6 +143,10 @@ public class FriendsFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final FriendsViewHolder holder, int position, @NonNull final Friends model) {
 
+                if (!model.getFriends_name().toLowerCase().contains(filter.toLowerCase()) && !filter.equals("")) {
+                    holder.hide();
+                }
+
                 holder.setStatus(model.getStatus());
 
                 final String list_user_id = getRef(position).getKey();
@@ -137,11 +155,6 @@ public class FriendsFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         String friendsName = dataSnapshot.child("name").getValue().toString();
-
-                        if (!friendsName.contains(filter) && !filter.equals("")) {
-                            holder.hide();
-                            return;
-                        }
 
                         holder.setName(friendsName);
                         holder.setStatus(dataSnapshot.child("status").getValue().toString());
@@ -175,6 +188,8 @@ public class FriendsFragment extends Fragment {
                                 if (which == 1) {
                                     Intent chat_intent = new Intent(getContext(), ChatActivity.class);
                                     chat_intent.putExtra("user_id", list_user_id);
+                                    chat_intent.putExtra("user_name", model.getFriends_name());
+                                    chat_intent.putExtra("my_name", mMyName);
                                     startActivity(chat_intent);
                                 }
                             }
@@ -207,7 +222,7 @@ public class FriendsFragment extends Fragment {
         };
 
         firebaseRecyclerAdapter.startListening();
-        mFriendsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        //mFriendsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mFriendsList.setAdapter(firebaseRecyclerAdapter);
 
     }
@@ -252,7 +267,7 @@ public class FriendsFragment extends Fragment {
 
         public void hide() {
             //mView.setVisibility(View.INVISIBLE);
-            //mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
             mView.setVisibility(View.GONE);
         }
 

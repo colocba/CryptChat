@@ -6,7 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -59,6 +63,7 @@ public class ChatsFragment extends Fragment {
     private FirebaseAuth mAuth;
 
     private String mCurrent_user_id;
+    private String mMyName;
 
     private View mMainView;
     private SharedPreferences mSp;
@@ -87,6 +92,19 @@ public class ChatsFragment extends Fragment {
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         mMessageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(mCurrent_user_id);
         mUsersDatabase.keepSynced(true);
+
+        // GETTING MY NAME FOR SEARCH FILTER PURPOSES
+        mUsersDatabase.child(mCurrent_user_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mMyName = dataSnapshot.child("name").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setReverseLayout(true);
@@ -211,9 +229,8 @@ public class ChatsFragment extends Fragment {
         }
 
         public void hide() {
+            mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
             mView.setVisibility(View.GONE);
-            //mView.setVisibility(View.INVISIBLE);
-            //mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
         }
 
         public void setType(String type) {
@@ -238,6 +255,11 @@ public class ChatsFragment extends Fragment {
             protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model) {
 
                 final String list_user_id = getRef(position).getKey();
+
+                if (!model.getOther_user_name().toLowerCase().contains(filter.toLowerCase()) && !filter.equals("")) {
+                    holder.hide();
+                    return;
+                }
 
                 Query lastMessageQuery = mMessageDatabase.child(list_user_id).limitToLast(1);
 
@@ -291,11 +313,6 @@ public class ChatsFragment extends Fragment {
 
                         final String userName = dataSnapshot.child("name").getValue().toString();
 
-                        if (!userName.contains(filter) && !filter.equals("")) {
-                            holder.hide();
-                            return;
-                        }
-
                         String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
 
                         if (dataSnapshot.hasChild("online")) {
@@ -315,6 +332,7 @@ public class ChatsFragment extends Fragment {
                                 Intent chatIntent = new Intent(getContext(), ChatActivity.class);
                                 chatIntent.putExtra("user_id", list_user_id);
                                 chatIntent.putExtra("user_name", userName);
+                                chatIntent.putExtra("my_name", mMyName);
                                 startActivity(chatIntent);
 
                             }
@@ -328,10 +346,6 @@ public class ChatsFragment extends Fragment {
                 });
 
 
-            }
-
-            public void filter() {
-                return;
             }
 
 
@@ -356,7 +370,9 @@ public class ChatsFragment extends Fragment {
         };
 
         mFirebaseRecyclerAdapter.startListening();
-        mConvList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
+        //mConvList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
         mConvList.setAdapter(mFirebaseRecyclerAdapter);
 
     }

@@ -86,6 +86,7 @@ public class ChatActivity extends AppCompatActivity {
     private String mPicture;
     private String mOnline;
     private String mCurrentUserId;
+    private String mMyName;
 
     // PRIVATE AND PUBLIC KEYS
     private String mPublicKey;
@@ -128,6 +129,8 @@ public class ChatActivity extends AppCompatActivity {
         mAESKey = sp.getString("aes_key_" + mCurrentUserId, "");
 
         mChatUserId = getIntent().getStringExtra("user_id");
+        mChatUserName = getIntent().getStringExtra("user_name");
+        mMyName = getIntent().getStringExtra("my_name");
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View action_bar_view = inflater.inflate(R.layout.chat_custom_bar, null);
@@ -158,7 +161,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                mChatUserName = dataSnapshot.child("name").getValue().toString();
+                //mChatUserName = dataSnapshot.child("name").getValue().toString();
                 mPicture = dataSnapshot.child("picture").getValue().toString();
                 mOnline = dataSnapshot.child("online").getValue().toString();
                 mPublicKey = dataSnapshot.child("public_key").getValue().toString();
@@ -194,13 +197,20 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (!dataSnapshot.hasChild(mChatUserId)) {
-                    Map chatAddMap = new HashMap();
-                    chatAddMap.put("seen", false);
-                    chatAddMap.put("timestamp", ServerValue.TIMESTAMP);
+                    Map chatAddMapOtherUser = new HashMap();
+                    Map chatAddMapThisUser = new HashMap();
+
+                    chatAddMapOtherUser.put("seen", false);
+                    chatAddMapOtherUser.put("timestamp", ServerValue.TIMESTAMP);
+                    chatAddMapOtherUser.put("other_user_name", mChatUserName);
+
+                    chatAddMapThisUser.put("seen", false);
+                    chatAddMapThisUser.put("timestamp", ServerValue.TIMESTAMP);
+                    chatAddMapThisUser.put("other_user_name", mMyName);
 
                     Map chatUserMap = new HashMap();
-                    chatUserMap.put("Chat/" + mCurrentUserId + "/" + mChatUserId, chatAddMap);
-                    chatUserMap.put("Chat/" + mChatUserId + "/" + mCurrentUserId, chatAddMap);
+                    chatUserMap.put("Chat/" + mCurrentUserId + "/" + mChatUserId, chatAddMapOtherUser);
+                    chatUserMap.put("Chat/" + mChatUserId + "/" + mCurrentUserId, chatAddMapThisUser);
 
                     mRootRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
                         @Override
