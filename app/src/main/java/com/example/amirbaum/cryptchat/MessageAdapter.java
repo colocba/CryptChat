@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.util.Base64;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.vision.text.Line;
 import com.google.firebase.database.DataSnapshot;
@@ -143,6 +144,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public TextView timeOfTheLastMessage;
         public View mView;
         public Bitmap bitmapImage;
+        public LottieAnimationView mWaitingPicAnimation;
 
         public MessageViewHolder(View view) {
             super(view);
@@ -154,6 +156,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             //newImageButton = (ImageButton) view.findViewById(R.id.new_image_received_button);
             timeOfTheLastMessage = (TextView) view.findViewById(R.id.time_text_layout);
             mStorageRef = FirebaseStorage.getInstance().getReference();
+            mWaitingPicAnimation = (LottieAnimationView) view.findViewById(R.id.waiting_pic_animation_other);
         }
 
         public void bind(final Messages c) {
@@ -190,6 +193,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
                 messageText.setVisibility(View.VISIBLE);
                 messageImage.setVisibility(View.GONE);
+                mWaitingPicAnimation.setVisibility(View.GONE);
 
                 String decryptedMessage = "";
 
@@ -200,7 +204,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             } else {
                 // rsa_encrypted_message contains the encoded encrypted aes key for the other user to open
 
-                messageImage.setVisibility(View.VISIBLE);
+                mWaitingPicAnimation.setVisibility(View.VISIBLE);
+                messageImage.setVisibility(View.GONE);
                 messageText.setVisibility(View.GONE);
 
                 String messageId = c.getId();
@@ -216,10 +221,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
                         // COMPRESSING IMAGE TO DISPLAY ON SCREEN
                         byte[] image = EncryptionDecryptionUtility.AESdecryptMessage(bytes, aesKey);
                         bitmapImage = BitmapFactory.decodeByteArray(image, 0, image.length);
-                        //ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        //bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, out);
-                        //Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
                         messageImage.setImageBitmap(bitmapImage);
+                        mWaitingPicAnimation.setVisibility(View.GONE);
+                        messageImage.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -227,24 +231,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
 
-                        // TODO: CHECK HOW TO COMPRESS THE IMAGE TO BE MAX 1MB, THEN SEND IT TO THE INTENT
-                        /*
                         Intent fullScreenIntent = new Intent(mContext, FullSizeImageActivity.class);
-                        //byte[] image = convertBitmapToByteArray(bitmapImage);
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        bitmapImage.compress(Bitmap.CompressFormat.PNG, 30, out);
-                        Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
-                        byte[] image = convertBitmapToByteArray(decoded);
-                        fullScreenIntent.putExtra("image", image);
-                        mContext.startActivity(fullScreenIntent);*/
-                    }
-                });
-
-                messageImage.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        //saveImageOnDevice(bitmapImage, c.getId());
-                        return false;
+                        fullScreenIntent.putExtra("image_name", c.getId());
+                        fullScreenIntent.putExtra("aes_key", aesKey);
+                        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(fullScreenIntent);
                     }
                 });
 
@@ -262,6 +253,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public TextView timeOfTheLastMessage;
         public View mView;
         public Bitmap bitmapImage;
+        public LottieAnimationView mWaitingPicAnimation;
 
         public SenderMessageViewHolder(View view) {
             super(view);
@@ -269,6 +261,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageText = (TextView) view.findViewById(R.id.message_text_layout);
             //profileImage = (CircleImageView) view.findViewById(R.id.message_profile_image_layout);
             messageImage = (ImageView) view.findViewById(R.id.message_image_layout);
+            mWaitingPicAnimation = (LottieAnimationView) view.findViewById(R.id.waiting_pic_animation);
             //newImageButton = (ImageButton) view.findViewById(R.id.new_image_received_button);
             timeOfTheLastMessage = (TextView) view.findViewById(R.id.time_text_layout);
             mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -277,7 +270,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public void bind(final Messages c) {
 
             String from_user = c.getFrom();
-            String message_type = c.getType();
+            final String message_type = c.getType();
 
 
             mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(from_user);
@@ -300,6 +293,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             if (message_type.equals("text")) {
                 messageText.setVisibility(View.VISIBLE);
                 messageImage.setVisibility(View.GONE);
+                mWaitingPicAnimation.setVisibility(View.GONE);
+
 
                 String decryptedMessage = "";
 
@@ -309,7 +304,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 // THE MESSAGE IS AN IMAGE MESSAGE
             } else {
                 // rsa_encrypted_message contains the encoded encrypted aes key for the other user to open
-                messageImage.setVisibility(View.VISIBLE);
+                messageImage.setVisibility(View.GONE);
+                mWaitingPicAnimation.setVisibility(View.VISIBLE);
                 messageText.setVisibility(View.GONE);
 
                 String messageId = c.getId();
@@ -325,6 +321,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
                         //bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, out);
                         //Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
                         messageImage.setImageBitmap(bitmapImage);
+                        mWaitingPicAnimation.setVisibility(View.GONE);
+                        messageImage.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -332,15 +330,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
 
-                        // TODO: CHECK HOW TO COMPRESS THE IMAGE TO BE MAX 1MB, THEN SEND IT TO THE INTENT
-                        /*Intent fullScreenIntent = new Intent(mContext, FullSizeImageActivity.class);
-                        //byte[] image = convertBitmapToByteArray(bitmapImage);
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        bitmapImage.compress(Bitmap.CompressFormat.PNG, 30, out);
-                        Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
-                        byte[] image = convertBitmapToByteArray(decoded);
-                        fullScreenIntent.putExtra("image", image);
-                        mContext.startActivity(fullScreenIntent); */
+                        Intent fullScreenIntent = new Intent(mContext, FullSizeImageActivity.class);
+                        fullScreenIntent.putExtra("image_name", c.getId());
+                        fullScreenIntent.putExtra("aes_key", mAESKey);
+                        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(fullScreenIntent);
                     }
                 });
 

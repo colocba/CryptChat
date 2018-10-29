@@ -100,12 +100,6 @@ public class ChatActivity extends AppCompatActivity {
     private static final int TOTAL_ITEMS_TO_LOAD = 10;
     private static final int GALLERY_PICK = 1;
 
-    // Refreshing paging purposes
-    private int mCurrentPage = 1;
-    private int itemPos = 0;
-    private String mLastKey = "";
-    private String mPrevKey = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +142,7 @@ public class ChatActivity extends AppCompatActivity {
 
         mMessagesList = (RecyclerView) findViewById(R.id.messages_list);
         mLinearLayout = new LinearLayoutManager(this);
+        //mLinearLayout.setStackFromEnd(true);
 
         mMessagesList.setHasFixedSize(true);
         mMessagesList.setLayoutManager(mLinearLayout);
@@ -328,63 +323,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
         }
-
-    }
-
-    private void loadMoreMessages() {
-
-        DatabaseReference messageRef = mRootRef.child("Messages").child(mCurrentUserId).child(mChatUserId);
-        Query messagesQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
-
-        messagesQuery.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                Messages message = dataSnapshot.getValue(Messages.class);
-                String messageKey = dataSnapshot.getKey();
-
-                if (!mPrevKey.equals(messageKey)) {
-
-                    messagesList.add(itemPos++, message);
-
-                } else {
-                    mPrevKey = mLastKey;
-                }
-
-                if (itemPos == 1) {
-
-                    mLastKey = messageKey;
-
-                }
-
-
-                mAdapter.notifyDataSetChanged();
-
-                //mRefreshLayout.setRefreshing(false);
-
-                //mLinearLayout.scrollToPositionWithOffset(10, 0);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
     }
 

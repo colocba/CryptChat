@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,9 +23,12 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 
@@ -39,7 +43,10 @@ public class UserActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private DatabaseReference mUserRef;
+    private DatabaseReference mRootRef;
+    private DatabaseReference mMyMessagesRef;
     private TabLayout mTabLayout;
+    private NotificationCompat.Builder mNotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,19 @@ public class UserActivity extends AppCompatActivity {
 
         if (mAuth.getCurrentUser() != null) {
             mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
+            mRootRef = FirebaseDatabase.getInstance().getReference();
+            mRootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            mMyMessagesRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(mAuth.getCurrentUser().getUid());
         }
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -114,6 +134,8 @@ public class UserActivity extends AppCompatActivity {
         super.onStart();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
+
 
         if (currentUser == null) {
             Intent startIntent = new Intent(UserActivity.this, MainActivity.class);
