@@ -46,7 +46,6 @@ public class UserActivity extends AppCompatActivity {
     private DatabaseReference mRootRef;
     private DatabaseReference mMyMessagesRef;
     private TabLayout mTabLayout;
-    private NotificationCompat.Builder mNotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,24 +88,6 @@ public class UserActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.navigation_menu, menu);
-
-        /*MenuItem ourSearchItem = menu.findItem(R.id.menu_item_search);
-        SearchView sv = (SearchView) ourSearchItem.getActionView();
-
-        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // MAKE SEARCH INTO THE CURRENT FRAGMENT
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // MAKE SEARCH INTO THE CURRENT FRAGMENT
-                return true;
-            }
-        });*/
-        
         return true;
     }
 
@@ -134,8 +115,6 @@ public class UserActivity extends AppCompatActivity {
         super.onStart();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
-
 
         if (currentUser == null) {
             Intent startIntent = new Intent(UserActivity.this, MainActivity.class);

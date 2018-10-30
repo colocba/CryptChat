@@ -43,6 +43,11 @@
             android:parentActivityName=".UserActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".FullSizeImageActivity"></activity>
+        <service android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

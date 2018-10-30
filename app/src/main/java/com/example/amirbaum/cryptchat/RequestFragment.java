@@ -235,7 +235,7 @@ public class RequestFragment extends Fragment {
 
         public void hide() {
             mView.setVisibility(View.GONE);
-            mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            //mView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
         }
 
         public void setButtons() {

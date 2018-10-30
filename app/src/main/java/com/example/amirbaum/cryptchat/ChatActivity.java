@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +23,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.amirbaum.cryptchat.Notifications.APIService;
+import com.example.amirbaum.cryptchat.Notifications.Client;
+import com.example.amirbaum.cryptchat.Notifications.Data;
+import com.example.amirbaum.cryptchat.Notifications.MyResponse;
+import com.example.amirbaum.cryptchat.Notifications.Sender;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -57,6 +62,10 @@ import java.util.Map;
 import javax.crypto.Cipher;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -87,6 +96,7 @@ public class ChatActivity extends AppCompatActivity {
     private String mOnline;
     private String mCurrentUserId;
     private String mMyName;
+    private String mUserToken;
 
     // PRIVATE AND PUBLIC KEYS
     private String mPublicKey;
@@ -99,6 +109,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private static final int TOTAL_ITEMS_TO_LOAD = 10;
     private static final int GALLERY_PICK = 1;
+
+    APIService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +160,8 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList.setLayoutManager(mLinearLayout);
         mMessagesList.setAdapter(mAdapter);
 
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+
         loadMessages();
 
 
@@ -160,6 +174,7 @@ public class ChatActivity extends AppCompatActivity {
                 mPicture = dataSnapshot.child("picture").getValue().toString();
                 mOnline = dataSnapshot.child("online").getValue().toString();
                 mPublicKey = dataSnapshot.child("public_key").getValue().toString();
+                mUserToken = dataSnapshot.child("device_token").getValue().toString();
                 mCustomBarTitle.setText(mChatUserName);
                 if (!mPicture.equals("default")) {
                     Picasso.get().load(mPicture).placeholder(R.drawable.user_place_holder).into(mCustomBarImageView);
@@ -263,6 +278,7 @@ public class ChatActivity extends AppCompatActivity {
     // WE WILL UPLOAD THAT ENCRYPTED (WITH RSA) KEY TO FIREBASE.
     // THE OTHER USER HAVE TO DECRYPT THE ENCRYPTED (WITH RSA) AES KEY, AND THEN DECRYPT THE IMAGE WITH
     // THE AES KEY.
+    // HERE WE ALSO SEND A NOTIFICATION THROUGH THE API
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -313,6 +329,27 @@ public class ChatActivity extends AppCompatActivity {
                             if (databaseError != null) {
 
                                 Log.d("CHAT_LOG", databaseError.getMessage().toString());
+
+                            } else {
+
+                                Sender sender = new Sender(new Data(mCurrentUserId, R.mipmap.ic_launcher, "New image from " + mChatUserName,
+                                        "New image", mChatUserId, mMyName, mChatUserName, true), mUserToken);
+
+                                apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                                    @Override
+                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                        if (response.code() == 200) {
+                                            if (response.body().success != 1) {
+                                                Toasty.error(ChatActivity.this, "Failed", Toast.LENGTH_SHORT, true).show();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                                    }
+                                });
 
                             }
 
@@ -368,7 +405,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    // This method only updates the database with the new encrypted message
+    // This method only updates the database with the new encrypted message and send a notification with the api
     private void sendMessage() {
 
         String message = mEditTextMessage.getText().toString();
@@ -399,6 +436,25 @@ public class ChatActivity extends AppCompatActivity {
             messageMap.put("type", "text");
             messageMap.put("time", ServerValue.TIMESTAMP);
             messageMap.put("from", mCurrentUserId);
+
+            Sender sender = new Sender(new Data(mCurrentUserId, R.mipmap.ic_launcher, "New message from " + mChatUserName,
+                    "New message", mChatUserId, mMyName, mChatUserName, false), mUserToken);
+
+            apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                @Override
+                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                    if (response.code() == 200) {
+                        if (response.body().success != 1) {
+                            Toasty.error(ChatActivity.this, "Failed", Toast.LENGTH_SHORT, true).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                }
+            });
 
             Map messageUserMap = new HashMap();
             messageUserMap.put(current_user_ref + "/" + push_id, messageMap);

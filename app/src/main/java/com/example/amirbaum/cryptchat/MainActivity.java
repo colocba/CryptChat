@@ -131,10 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent register_intent = new Intent(MainActivity.this, Register.class);
             startActivity(register_intent);
         }
-
-        if (v == bFaceReco) {
-            // TODO: MAKE FACE RECOGNITION AUTHENTICATION
-        }
     }
 
 

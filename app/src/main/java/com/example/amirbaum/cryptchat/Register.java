@@ -22,9 +22,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -59,7 +61,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     private final String FIREBASE_TOKEN_FIELD = "device_token";
     private final String FIREBASE_ONLINE_FIELD = "online";
     private final String FIREBASE_PUBLIC_KEY_FIELD = "public_key";
-    private final String FIREBASE_FACE_RECO_FIELD = "face_reco_picture";
 
     private static final int CAMERA_PIC_REQUEST = 1337;
 
@@ -92,40 +93,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     @Override
     public void onClick(View v) {
 
-        // TODO: CHANGE IF WE DONT DO FACE RECO
-
         if (v == bRegister) {
-            // TODO: ERASE IF WE DONT DO FACE RECO
-            /*if (mPictureTaken == false) {
-                Toasty.info(this, "Please, take a picture first", Toast.LENGTH_SHORT, true).show();
-                return;
-            }*/
             registerUser();
         }
-        if (v == bTakePic) {
-            takePicture();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        // TODO: ERASE IF WE DONT DO FACE RECO
-
-        if (requestCode == CAMERA_PIC_REQUEST) {
-            mImageForFaceReco = (Bitmap) data.getExtras().get("data");
-            mPictureTaken = true;
-            Toast.makeText(this, "RECEIVED PIC", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void takePicture() {
-
-        // TODO: ERASE IF WE DONT DO FACE RECO
-
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
-
     }
 
     public void registerUser() {
@@ -174,8 +144,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
 
                     FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
                     String uid = current_user.getUid();
+
                     final String device_token = FirebaseInstanceId.getInstance().getToken();
-                    //final StorageReference face_pic_path = mStorageRef.child("face_reco_pictures").child(current_user.getUid() + ".jpg");
 
                     KeysGenerator keysGenerator = new KeysGenerator();
                     keysGenerator.generateRSAKey();
@@ -185,7 +155,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                     String AESKey = keysGenerator.getAESKey();
 
 
-                    // SAVING THE AES AND PUBLIC KEY ON THE DEVICE AS A STRING
+                    // SAVING THE AES AND PRIVATE KEY ON THE DEVICE AS A STRING
                     mSharedPref = getSharedPreferences("myPref", Context.MODE_PRIVATE);
                     mEditor = mSharedPref.edit();
                     mEditor.putString("private_key_" + uid, privateKey);
@@ -204,8 +174,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                     userMap.put(FIREBASE_ONLINE_FIELD, "false");
                     // SAVING THE PUBLIC KEY ON FIREBASE DATABASE AS A STRING
                     userMap.put(FIREBASE_PUBLIC_KEY_FIELD, publicKey);
-                    // SAVING FACE RECOGNITION PICTURE FOR USER LATER TO LOGIN
-                    //userMap.put(FIREBASE_FACE_RECO_FIELD, download_uri);
 
                     // UPLOADING EVERYTHING TO FIREBASE
                     mDataBase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -218,23 +186,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                                 return;
                         }
                     });
-
-
-                    // UPLOADING THE IMAGE RECOGNITION PICTURE FIRST
-                    // TODO: ERRASE IF WE DONT DO FACE RECO
-                    /*face_pic_path.putBytes(bitmapToByteArray(mImageForFaceReco)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            face_pic_path.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String download_uri = uri.toString();
-
-
-                                }
-                            });
-                        }
-                    });*/
 
                 } else {
                     Toasty.error(Register.this, task.getResult().toString(), Toast.LENGTH_SHORT, true).show();
