@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.amirbaum.cryptchat.SettingsActivity">
+    tools:context="com.example.amirbaum.cryptchat.SettingsActivity"
+    android:background="@color/fui_bgPhone">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/settings_image"
@@ -39,7 +40,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="29dp"
-        android:text="Change Image"/>
+        android:text="Change Image"
+        android:background="@drawable/cool_button"
+        android:textColor="#FFFFFF"/>
 
     <Button
         android:id="@+id/bChangeStatus"
@@ -47,6 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="27dp"
-        android:text="Change status" />
+        android:text="Change status"
+        android:background="@drawable/cool_button"
+        android:textColor="#FFFFFF"/>
 
 </LinearLayout>

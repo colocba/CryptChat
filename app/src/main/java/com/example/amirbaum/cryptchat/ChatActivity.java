@@ -437,7 +437,7 @@ public class ChatActivity extends AppCompatActivity {
             messageMap.put("time", ServerValue.TIMESTAMP);
             messageMap.put("from", mCurrentUserId);
 
-            Sender sender = new Sender(new Data(mCurrentUserId, R.mipmap.ic_launcher, "New message from " + mChatUserName,
+            Sender sender = new Sender(new Data(mCurrentUserId, R.mipmap.ic_launcher, "New message from " + mMyName,
                     "New message", mChatUserId, mMyName, mChatUserName, false), mUserToken);
 
             apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
@@ -480,7 +480,11 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mRootRef.child("Users").child(mCurrentUserId).child("online").setValue(true);
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            mRootRef.child("Users").child(mCurrentUserId).child("online").setValue(true);
+        }
     }
 
     @Override
@@ -493,6 +497,17 @@ public class ChatActivity extends AppCompatActivity {
             mRootRef.child("Users").child(mCurrentUserId).child("online").setValue(ServerValue.TIMESTAMP);
         }
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            mRootRef.child("Users").child(mCurrentUserId).child("online").setValue(ServerValue.TIMESTAMP);
+        }
     }
 
     public byte[] readBytes(Uri uri) {

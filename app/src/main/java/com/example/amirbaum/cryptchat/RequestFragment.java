@@ -174,7 +174,6 @@ public class RequestFragment extends Fragment {
         };
 
         firebaseRecyclerAdapter.startListening();
-        //mRequestFriendshipList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mRequestFriendshipList.setAdapter(firebaseRecyclerAdapter);
 
     }
@@ -198,7 +197,6 @@ public class RequestFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //startRecyclerView(newText);
                 if (!newText.equals("")) {
                     Toasty.info(getContext(), "There is nothing to search here...", Toast.LENGTH_SHORT, true).show();
                 }

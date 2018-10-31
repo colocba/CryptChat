@@ -15,45 +15,49 @@
         android:src="@drawable/all"
         android:id="@+id/logo_cryptchat"/>
 
-    <EditText
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:layout_margin="10dp"
+            android:id="@+id/editTextEmail"
+            android:inputType="textEmailAddress"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        android:layout_margin="10dp"
-        android:id="@+id/editTextEmail"
-        android:inputType="textEmailAddress"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:id="@+id/editTextPassword"/>
+        app:passwordToggleEnabled="true">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:id="@+id/editTextPassword" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sign in"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:background="@drawable/button_selector"
-        android:id="@+id/bSignIn"/>
-
-    <ImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:src="@drawable/face_recognition"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:id="@+id/face_reco_button"/>
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/cool_button"
+        android:textColor="#FFFFFF"
+        android:id="@+id/bSignIn" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New User? Register"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
+        android:layout_marginTop="20dp"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:id="@+id/bRegister"/>
 

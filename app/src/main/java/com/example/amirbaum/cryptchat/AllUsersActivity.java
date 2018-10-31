@@ -108,7 +108,12 @@ public class AllUsersActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
 
-        mUsersDatabase.child(mAuth.getCurrentUser().getUid()).child("online").setValue(true);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            mUsersDatabase.child(mAuth.getCurrentUser().getUid()).child("online").setValue(true);
+        } else
+            return;
 
         startRecyclerView("");
 
@@ -181,6 +186,17 @@ public class AllUsersActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null) {
+            mUsersDatabase.child(mUid).child("online").setValue(ServerValue.TIMESTAMP);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
             mUsersDatabase.child(mUid).child("online").setValue(ServerValue.TIMESTAMP);
         }
     }

@@ -60,6 +60,7 @@ public class StatusActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             mProgress.dismiss();
                             Toasty.success(StatusActivity.this, "Your new status has been saved!", Toast.LENGTH_SHORT, true).show();
+                            finish();
                         } else {
                             mProgress.dismiss();
                             Toasty.error(StatusActivity.this, "There was some error updating your status", Toast.LENGTH_SHORT, true).show();

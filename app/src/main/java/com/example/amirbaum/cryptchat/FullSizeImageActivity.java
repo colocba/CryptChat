@@ -27,7 +27,6 @@ public class FullSizeImageActivity extends AppCompatActivity {
         final String aes_key = getIntent().getStringExtra("aes_key");
 
         mImage = (ImageView) findViewById(R.id.large_image_view);
-        final Animation zoomAnimation = AnimationUtils.loadAnimation(this, R.anim.zoom);
 
         mStorage = FirebaseStorage.getInstance().getReference().child("message_images").child(image_name + ".jpg");
 
@@ -37,7 +36,6 @@ public class FullSizeImageActivity extends AppCompatActivity {
                 byte[] image = EncryptionDecryptionUtility.AESdecryptMessage(bytes, aes_key);
                 Bitmap bitmapImage = BitmapFactory.decodeByteArray(image, 0, image.length);
                 mImage.setImageBitmap(bitmapImage);
-                mImage.startAnimation(zoomAnimation);
             }
         });
 

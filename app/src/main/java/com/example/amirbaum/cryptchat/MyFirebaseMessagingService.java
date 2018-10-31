@@ -25,9 +25,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser().getUid().equals(remoteMessage.getData().get("sent"))) {
-            createNotificationChannel();
-            showNotification(remoteMessage);
+        if (mAuth.getCurrentUser() != null) {
+            if (mAuth.getCurrentUser().getUid().equals(remoteMessage.getData().get("sent"))) {
+                createNotificationChannel();
+                showNotification(remoteMessage);
+            }
         }
     }
 
@@ -60,7 +62,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.cryptchat_icon)
+                .setSmallIcon(R.drawable.only_chat_bubble)
                 .setContentTitle(remoteMessage.getData().get("title"))
                 .setContentText(remoteMessage.getData().get("body"))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -69,7 +71,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
-        // notificationId is a unique int for each notification that you must define
         notificationManager.notify(500, mBuilder.build());
 
     }

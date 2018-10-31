@@ -33,6 +33,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bSignIn;
     private Button bRegister;
     private ImageView logo;
-    private ImageView bFaceReco;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabaseUsers;
@@ -79,11 +79,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         etPassword = (EditText)findViewById(R.id.editTextPassword);
         bSignIn = (Button)findViewById(R.id.bSignIn);
         bRegister = (Button)findViewById(R.id.bRegister);
-        bFaceReco = (ImageView)findViewById(R.id.face_reco_button);
 
         bSignIn.setOnClickListener(this);
         bRegister.setOnClickListener(this);
-        bFaceReco.setOnClickListener(this);
 
         progressDialogLoggin = new ProgressDialog(this);
         getSupportActionBar().hide();
@@ -101,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(user_intent);
         }
     }
-
 
     @Override
     public void onClick(View v) {

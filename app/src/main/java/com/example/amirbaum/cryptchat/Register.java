@@ -48,11 +48,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     private EditText etPassword;
     private EditText etConfirmPassword;
     private Button bRegister;
-    private ImageButton bTakePic;
     private ProgressDialog progressDialog;
     private DatabaseReference mDataBase;
-    private StorageReference mStorageRef;
-    private Bitmap mImageForFaceReco;
 
     private final String FIREBASE_NAME_FIELD = "name";
     private final String FIREBASE_STATUS_FIELD = "status";
@@ -62,12 +59,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     private final String FIREBASE_ONLINE_FIELD = "online";
     private final String FIREBASE_PUBLIC_KEY_FIELD = "public_key";
 
-    private static final int CAMERA_PIC_REQUEST = 1337;
 
     private SharedPreferences mSharedPref;
     private SharedPreferences.Editor mEditor;
-
-    private boolean mPictureTaken = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,17 +69,13 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
-        mStorageRef = FirebaseStorage.getInstance().getReference();
-
         etName = (EditText)findViewById(R.id.name);
         etEmail = (EditText)findViewById(R.id.email);
         etPassword = (EditText)findViewById(R.id.password);
         etConfirmPassword = (EditText)findViewById(R.id.confirmPassword);
         bRegister = (Button)findViewById(R.id.register);
-        bTakePic = (ImageButton)findViewById(R.id.take_pic);
 
         bRegister.setOnClickListener(this);
-        bTakePic.setOnClickListener(this);
 
         progressDialog = new ProgressDialog(this);
     }
@@ -182,6 +172,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                             if (task.isSuccessful()) {
                                 Toasty.success(Register.this, "You have been successfully registered", Toast.LENGTH_SHORT, true).show();
                                 progressDialog.cancel();
+                                finish();
                             } else
                                 return;
                         }

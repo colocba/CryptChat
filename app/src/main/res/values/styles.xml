@@ -14,4 +14,10 @@
 
     </style>
 
+    <style name="AppTheme.ChatBackground">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/chat_background</item>
+    </style>
+
 </resources>
