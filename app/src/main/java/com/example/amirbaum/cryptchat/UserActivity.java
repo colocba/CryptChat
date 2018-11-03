@@ -58,6 +58,9 @@ public class UserActivity extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(this);
         mViewPager = (ViewPager)findViewById(R.id.main_tab_pager);
+
+        int fragmentToShow = getIntent().getIntExtra("position", 1);
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         if (mAuth.getCurrentUser() != null) {
@@ -81,6 +84,8 @@ public class UserActivity extends AppCompatActivity {
         mTabLayout = (TabLayout)findViewById(R.id.main_tabs);
 
         mTabLayout.setupWithViewPager(mViewPager);
+
+        mViewPager.setCurrentItem(fragmentToShow);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
