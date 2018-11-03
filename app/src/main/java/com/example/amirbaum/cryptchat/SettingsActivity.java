@@ -54,6 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
     // Firebase user and reference
     private DatabaseReference mDatabaseUser;
     private FirebaseUser current_user;
+    private FirebaseAuth mAuth;
 
     private TextView tbName;
     private TextView tbStatus;
@@ -81,6 +82,7 @@ public class SettingsActivity extends AppCompatActivity {
         ciSettingsImage = (CircleImageView)findViewById(R.id.settings_image);
 
         current_user = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
         String current_uid = current_user.getUid();
         mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
         mDatabaseUser.keepSynced(true);
@@ -254,16 +256,22 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mDatabaseUser.child("online").setValue(true);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            mDatabaseUser.child("online").setValue(true);
+        } else {
+            mDatabaseUser.child("online").setValue(ServerValue.TIMESTAMP);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        FirebaseUser currentUser = current_user;
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser == null) {
+        if (currentUser != null) {
             mDatabaseUser.child("online").setValue(ServerValue.TIMESTAMP);
         }
     }

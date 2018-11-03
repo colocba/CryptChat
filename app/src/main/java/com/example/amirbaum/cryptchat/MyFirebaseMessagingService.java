@@ -26,9 +26,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
+            // CHECKING IF THE NOTIFICATION IS FOR THE USER THAT IS CURRENTLY CONNECTED
             if (mAuth.getCurrentUser().getUid().equals(remoteMessage.getData().get("sent"))) {
                 createNotificationChannel();
-                showNotification(remoteMessage);
+                // IF THE FIELD "USER" IS AN EMPTY STRING, THAN THE NOTIFICATION IS A REQUEST FRIENDSHIP
+                if (remoteMessage.getData().get("user").equals("")) {
+                    showRequestNotification(remoteMessage);
+                } else // THE NOTIFICATION IS A MESSAGE NOTIFICATION
+                    showMessageNotification(remoteMessage);
             }
         }
     }
@@ -50,7 +55,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-    private void showNotification(RemoteMessage remoteMessage) {
+    private void showMessageNotification(RemoteMessage remoteMessage) {
 
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("user_id", remoteMessage.getData().get("user"));
@@ -73,5 +78,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         notificationManager.notify(500, mBuilder.build());
 
+    }
+
+    private void showRequestNotification(RemoteMessage remoteMessage) {
+        Intent intent = new Intent(this, UserActivity.class);
+
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.only_chat_bubble)
+                .setContentTitle(remoteMessage.getData().get("title"))
+                .setContentText(remoteMessage.getData().get("body"))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        notificationManager.notify(100, mBuilder.build());
     }
 }

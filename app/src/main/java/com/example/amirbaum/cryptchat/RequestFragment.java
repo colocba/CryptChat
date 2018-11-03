@@ -149,6 +149,7 @@ public class RequestFragment extends Fragment {
                     });
                 } else {
                     holder.hide();
+                    //notifyItemChanged(position);
                 }
 
             }

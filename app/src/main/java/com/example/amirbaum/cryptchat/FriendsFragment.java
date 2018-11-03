@@ -4,6 +4,7 @@ package com.example.amirbaum.cryptchat;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -31,9 +32,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
+import com.shashank.sony.fancydialoglib.Icon;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import in.myinnos.savebitmapandsharelib.SaveAndShare;
 
 
 /**
@@ -171,31 +177,36 @@ public class FriendsFragment extends Fragment {
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        CharSequence options[] = new CharSequence[]{"Open Profile", "Send Message"};
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-                        builder.setTitle("Select Options");
-                        builder.setItems(options, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == 0) {
-                                    Intent selected_user_intent = new Intent(getContext(), ProfileActivity.class);
-                                    selected_user_intent.putExtra("user_id", list_user_id);
-                                    startActivity(selected_user_intent);
-                                }
-
-                                if (which == 1) {
-                                    Intent chat_intent = new Intent(getContext(), ChatActivity.class);
-                                    chat_intent.putExtra("user_id", list_user_id);
-                                    chat_intent.putExtra("user_name", model.getFriends_name());
-                                    chat_intent.putExtra("my_name", mMyName);
-                                    startActivity(chat_intent);
-                                }
-                            }
-                        });
-
-                        builder.show();
+                        new FancyAlertDialog.Builder(getActivity())
+                                .setTitle(model.getFriends_name())
+                                .setBackgroundColor(Color.parseColor("#303F9F"))  //Don't pass R.color.colorvalue
+                                .setMessage("Select one of the options")
+                                .setNegativeBtnText("Open profile") //OPEN PROFILE BUTTON
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("Send Message") //SEND MESSAGE BUTTON
+                                .setNegativeBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setAnimation(Animation.POP)
+                                .isCancellable(true)
+                                .setIcon(R.drawable.ic_star_border_black_24dp, Icon.Visible)
+                                .OnPositiveClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        Intent chat_intent = new Intent(getContext(), ChatActivity.class);
+                                        chat_intent.putExtra("user_id", list_user_id);
+                                        chat_intent.putExtra("user_name", model.getFriends_name());
+                                        chat_intent.putExtra("my_name", mMyName);
+                                        startActivity(chat_intent);
+                                    }
+                                })
+                                .OnNegativeClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        Intent selected_user_intent = new Intent(getContext(), ProfileActivity.class);
+                                        selected_user_intent.putExtra("user_id", list_user_id);
+                                        startActivity(selected_user_intent);
+                                    }
+                                })
+                                .build();
                     }
                 });
 
@@ -222,7 +233,6 @@ public class FriendsFragment extends Fragment {
         };
 
         firebaseRecyclerAdapter.startListening();
-        //mFriendsList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mFriendsList.setAdapter(firebaseRecyclerAdapter);
 
     }

@@ -4,26 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/browser_actions_bg_grey"
     android:orientation="vertical"
-    tools:context="com.example.amirbaum.cryptchat.ProfileActivity"
-    android:background="@color/fui_bgPhone">
+    tools:context="com.example.amirbaum.cryptchat.ProfileActivity">
 
     <ImageView
         android:id="@+id/profile_image_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="250dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/user_place_holder"
-        />
+        android:src="@drawable/user_place_holder" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/linearLayout2"
         android:layout_below="@+id/profile_image_view"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/profile_name_text"
@@ -52,9 +51,9 @@
         android:layout_above="@+id/send_request_button"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="33dp"
-        android:text="Decline friendship"
         android:background="@drawable/cool_button"
-        android:textColor="#FFFFFF"/>
+        android:text="Decline friendship"
+        android:textColor="#FFFFFF" />
 
     <Button
         android:id="@+id/send_request_button"
@@ -64,10 +63,10 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginBottom="37dp"
+        android:background="@drawable/cool_button"
         android:text="REQUEST FRIENDSHIP"
         android:textAlignment="center"
-        android:background="@drawable/cool_button"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF" />
 
 
 </RelativeLayout>

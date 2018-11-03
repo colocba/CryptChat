@@ -12,6 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.amirbaum.cryptchat.Notifications.APIService;
+import com.example.amirbaum.cryptchat.Notifications.Client;
+import com.example.amirbaum.cryptchat.Notifications.Data;
+import com.example.amirbaum.cryptchat.Notifications.MyResponse;
+import com.example.amirbaum.cryptchat.Notifications.Sender;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +38,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -54,6 +62,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     private String mCurrentState;
     private String mUserName;
+    private String mUserTokenDevice;
+    private String mMyName;
+    private String mUserId;
 
 
     @Override
@@ -63,8 +74,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Getting the users id we are looking now
         final String user_id = getIntent().getStringExtra("user_id");
+        mUserId = user_id;
         // Getting my name for filter purposes
         final String myName = getIntent().getStringExtra("name");
+        mMyName = myName;
         // Getting our user instance
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -101,6 +114,7 @@ public class ProfileActivity extends AppCompatActivity {
                 mUserName = dataSnapshot.child("name").getValue().toString();
                 String status = dataSnapshot.child("status").getValue().toString();
                 String picture = dataSnapshot.child("picture").getValue().toString();
+                mUserTokenDevice = dataSnapshot.child("device_token").getValue().toString();
 
                 userNameTextView.setText(mUserName);
                 userStatusTextView.setText(status);
@@ -221,6 +235,8 @@ public class ProfileActivity extends AppCompatActivity {
                             mCurrentState = "req_sent";
                             requestFriendshipButton.setText("Cancel friend request");
 
+                            sendRequestFriendshipNotification(mUserTokenDevice, mUserId);
+
                         }
                     });
 
@@ -310,6 +326,31 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    private void sendRequestFriendshipNotification(String mUserTokenDevice, String to) {
+
+        APIService apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+
+        Sender sender = new Sender(new Data("", R.mipmap.ic_launcher, mMyName + " wants to be your friend",
+                "Somebody wants to be your friend", to, "", "", false), mUserTokenDevice);
+
+        apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+            @Override
+            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().success != 1) {
+                        Toasty.error(ProfileActivity.this, "Failed", Toast.LENGTH_SHORT, true).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
     public void removeFriendShipRequestOfTwoUsersFromDB(final DatabaseReference databaseFriendRequest, final String current_user_id,
                                                         final String profile_user_id, final String state, final String buttonText) {
         databaseFriendRequest.child(current_user_id).child(profile_user_id).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -331,7 +372,12 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(true);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(true);
+        } else {
+            mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(ServerValue.TIMESTAMP);
+        }
     }
 
     @Override
@@ -340,7 +386,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser == null) {
+        if (currentUser != null) {
             mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(ServerValue.TIMESTAMP);
         }
 

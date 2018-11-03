@@ -135,15 +135,4 @@ public class UserActivity extends AppCompatActivity {
             mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
         }
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-        }
-    }
 }

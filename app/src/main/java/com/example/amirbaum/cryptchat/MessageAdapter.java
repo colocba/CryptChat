@@ -1,5 +1,6 @@
 package com.example.amirbaum.cryptchat;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.util.Base64;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.vision.text.Line;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +40,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
+import com.shashank.sony.fancydialoglib.Icon;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayInputStream;
@@ -57,6 +63,7 @@ import javax.crypto.Cipher;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
+import in.myinnos.savebitmapandsharelib.SaveAndShare;
 
 /**
  * Created by amirbaum on 10/10/2018.
@@ -77,14 +84,17 @@ public class MessageAdapter extends RecyclerView.Adapter {
     private String mMyUserId;
 
     private Context mContext;
+    private Activity activity;
 
-    public MessageAdapter(List<Messages> mMessageList, String privateKey, String AESKey, String myUserId, Context context) {
+    public MessageAdapter(List<Messages> mMessageList, String privateKey, String AESKey, String myUserId,
+                          Context context, Activity activity) {
 
         this.mMessageList = mMessageList;
         this.mPrivateKey = privateKey;
         this.mMyUserId = myUserId;
         this.mAESKey = AESKey;
         this.mContext = context;
+        this.activity = activity;
     }
 
     @Override
@@ -166,6 +176,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
             mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(from_user);
+            mUserDatabase.keepSynced(true);
 
             mUserDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -208,7 +219,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 messageImage.setVisibility(View.GONE);
                 messageText.setVisibility(View.GONE);
 
-                String messageId = c.getId();
+                final String messageId = c.getId();
                 StorageReference filePath = mStorageRef.child("message_images").child(messageId + ".jpg");
 
                 String encodedEncryptedAESKey = c.getRsa_encrypted_message();
@@ -231,11 +242,47 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
 
-                        Intent fullScreenIntent = new Intent(mContext, FullSizeImageActivity.class);
-                        fullScreenIntent.putExtra("image_name", c.getId());
-                        fullScreenIntent.putExtra("aes_key", aesKey);
-                        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(fullScreenIntent);
+                        ImagePopup imagePopup = new ImagePopup(mContext);
+                        imagePopup.setWindowHeight(800); // Optional
+                        imagePopup.setWindowWidth(800); // Optional
+                        imagePopup.setBackgroundColor(Color.BLACK);  // Optional
+                        imagePopup.setFullScreen(true); // Optional
+                        imagePopup.setHideCloseIcon(true);  // Optional
+                        imagePopup.setImageOnClickClose(true);  // Optiona
+                        imagePopup.initiatePopup(messageImage.getDrawable());
+                        imagePopup.viewPopup();
+                    }
+                });
+
+                messageImage.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        new FancyAlertDialog.Builder(activity)
+                                .setTitle("Store this image")
+                                .setBackgroundColor(Color.parseColor("#303F9F"))  //Don't pass R.color.colorvalue
+                                .setMessage("Are you sure you want to store this image?")
+                                .setNegativeBtnText("Cancel")
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("Sure!")
+                                .setNegativeBtnBackground(Color.parseColor("#FFA9A7A8"))  //Don't pass R.color.colorvalue
+                                .setAnimation(Animation.SLIDE)
+                                .isCancellable(true)
+                                .setIcon(R.drawable.ic_photo_library, Icon.Visible)
+                                .OnPositiveClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        SaveAndShare.save(activity, bitmapImage,
+                                                messageId + ".jpg", "The picture has been saved on the phone", null);
+                                    }
+                                })
+                                .OnNegativeClicked(new FancyAlertDialogListener() {
+                                    @Override
+                                    public void OnClick() {
+                                        return;
+                                    }
+                                })
+                                .build();
+                        return false;
                     }
                 });
 
@@ -249,7 +296,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         public TextView messageText;
         public ImageView messageImage;
-        public ImageButton newImageButton;
         public TextView timeOfTheLastMessage;
         public View mView;
         public Bitmap bitmapImage;
@@ -274,6 +320,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
             mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(from_user);
+            mUserDatabase.keepSynced(true);
 
             mUserDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -308,7 +355,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 mWaitingPicAnimation.setVisibility(View.VISIBLE);
                 messageText.setVisibility(View.GONE);
 
-                String messageId = c.getId();
+                final String messageId = c.getId();
                 StorageReference filePath = mStorageRef.child("message_images").child(messageId + ".jpg");
 
                 filePath.getBytes(3000*3000).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -317,9 +364,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
                         // COMPRESSING IMAGE TO DISPLAY ON SCREEN
                         byte[] image = EncryptionDecryptionUtility.AESdecryptMessage(bytes, mAESKey);
                         bitmapImage = BitmapFactory.decodeByteArray(image, 0, image.length);
-                        //ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        //bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, out);
-                        //Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
                         messageImage.setImageBitmap(bitmapImage);
                         mWaitingPicAnimation.setVisibility(View.GONE);
                         messageImage.setVisibility(View.VISIBLE);
@@ -329,12 +373,15 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 messageImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        Intent fullScreenIntent = new Intent(mContext, FullSizeImageActivity.class);
-                        fullScreenIntent.putExtra("image_name", c.getId());
-                        fullScreenIntent.putExtra("aes_key", mAESKey);
-                        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(fullScreenIntent);
+                        ImagePopup imagePopup = new ImagePopup(mContext);
+                        imagePopup.setWindowHeight(800); // Optional
+                        imagePopup.setWindowWidth(800); // Optional
+                        imagePopup.setBackgroundColor(Color.BLACK);  // Optional
+                        imagePopup.setFullScreen(true); // Optional
+                        imagePopup.setHideCloseIcon(true);  // Optional
+                        imagePopup.setImageOnClickClose(true);  // Optiona
+                        imagePopup.initiatePopup(messageImage.getDrawable());
+                        imagePopup.viewPopup();
                     }
                 });
 

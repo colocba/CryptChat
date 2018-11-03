@@ -150,7 +150,7 @@ public class ChatActivity extends AppCompatActivity {
         mEditTextMessage = (EditText) findViewById(R.id.chat_message_view);
         mSendButtonChat = (ImageButton) findViewById(R.id.chat_send_button);
 
-        mAdapter = new MessageAdapter(messagesList, mPrivateKey, mAESKey, mCurrentUserId, getApplicationContext());
+        mAdapter = new MessageAdapter(messagesList, mPrivateKey, mAESKey, mCurrentUserId, this, this);
 
         mMessagesList = (RecyclerView) findViewById(R.id.messages_list);
         mLinearLayout = new LinearLayoutManager(this);
@@ -484,24 +484,14 @@ public class ChatActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             mRootRef.child("Users").child(mCurrentUserId).child("online").setValue(true);
+        } else {
+            mRootRef.child("Users").child(mCurrentUserId).child("online").setValue(ServerValue.TIMESTAMP);
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser == null) {
-            mRootRef.child("Users").child(mCurrentUserId).child("online").setValue(ServerValue.TIMESTAMP);
-        }
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 

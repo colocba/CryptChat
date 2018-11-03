@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/browser_actions_bg_grey"
     android:orientation="vertical"
-    tools:context="com.example.amirbaum.cryptchat.SettingsActivity"
-    android:background="@color/fui_bgPhone">
+    tools:context="com.example.amirbaum.cryptchat.SettingsActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/settings_image"
@@ -32,7 +32,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="17dp"
         android:text="Hi there, Im using CryptChat"
-        android:textSize="18dp"/>
+        android:textSize="18dp" />
 
     <Button
         android:id="@+id/bChangeImage"
@@ -40,9 +40,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="29dp"
-        android:text="Change Image"
         android:background="@drawable/cool_button"
-        android:textColor="#FFFFFF"/>
+        android:text="Change Image"
+        android:textColor="#FFFFFF" />
 
     <Button
         android:id="@+id/bChangeStatus"
@@ -50,8 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="27dp"
-        android:text="Change status"
         android:background="@drawable/cool_button"
-        android:textColor="#FFFFFF"/>
+        android:text="Change status"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>

@@ -108,16 +108,28 @@ public class AllUsersActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
 
+        super.onStart();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null) {
             mUsersDatabase.child(mAuth.getCurrentUser().getUid()).child("online").setValue(true);
         } else
-            return;
+            mUsersDatabase.child(mAuth.getCurrentUser().getUid()).child("online").setValue(ServerValue.TIMESTAMP);
 
         startRecyclerView("");
 
-        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            mUsersDatabase.child(mAuth.getCurrentUser().getUid()).child("online").setValue(ServerValue.TIMESTAMP);
+        }
     }
 
     public void startRecyclerView (final String filter) {
@@ -177,28 +189,6 @@ public class AllUsersActivity extends AppCompatActivity {
         firebaseRecyclerAdapter.startListening();
         mUsersList.setAdapter(firebaseRecyclerAdapter);
 
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser == null) {
-            mUsersDatabase.child(mUid).child("online").setValue(ServerValue.TIMESTAMP);
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            mUsersDatabase.child(mUid).child("online").setValue(ServerValue.TIMESTAMP);
-        }
     }
 
     public static class UsersViewHolder extends RecyclerView.ViewHolder {
