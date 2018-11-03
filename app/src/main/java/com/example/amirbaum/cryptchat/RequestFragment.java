@@ -124,6 +124,7 @@ public class RequestFragment extends Fragment {
                         .build();
 
         FirebaseRecyclerAdapter<FriendRequest, FriendRequestViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<FriendRequest, FriendRequestViewHolder>(options) {
+
             @Override
             protected void onBindViewHolder(@NonNull final FriendRequestViewHolder holder, int position, @NonNull FriendRequest model) {
 
@@ -149,7 +150,6 @@ public class RequestFragment extends Fragment {
                     });
                 } else {
                     holder.hide();
-                    //notifyItemChanged(position);
                 }
 
             }
@@ -164,6 +164,7 @@ public class RequestFragment extends Fragment {
 
             @Override
             public void onDataChanged() {
+                int itemCount = getItemCount();
                 if (getItemCount() == 0) {
                     mRequestFriendshipList.setVisibility(View.GONE);
                     mNoRequestLayout.setVisibility(View.VISIBLE);

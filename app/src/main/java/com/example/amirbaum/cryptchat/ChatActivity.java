@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -114,8 +115,11 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.chat_background));
 
         mChatToolBar = (Toolbar) findViewById(R.id.chat_bar_app);
         setSupportActionBar(mChatToolBar);
@@ -261,12 +265,29 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        // Listener for other user picture button
         mCustomBarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent selected_user_intent = new Intent(ChatActivity.this, ProfileActivity.class);
                 selected_user_intent.putExtra("user_id", mChatUserId);
                 startActivity(selected_user_intent);
+            }
+        });
+
+        // Listener for scrolling down all RecyclerView items each time the keyboard is open
+        mMessagesList.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (bottom < oldBottom) {
+                    mMessagesList.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMessagesList.smoothScrollToPosition(
+                                    mMessagesList.getAdapter().getItemCount() - 1);
+                        }
+                    }, 100);
+                }
             }
         });
 
